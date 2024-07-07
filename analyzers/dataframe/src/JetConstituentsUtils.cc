@@ -1033,19 +1033,73 @@ namespace FCCAnalyses
                                                       const ROOT::VecOps::RVec<int> mcin,
                                                       const rv::RVec<edm4hep::ReconstructedParticleData> &RecPart,
                                                       const rv::RVec<edm4hep::MCParticleData> &Particle,
-                                                      const rv::RVec<edm4hep::ReconstructedParticleData> &jets)
+                                                      const rv::RVec<edm4hep::ReconstructedParticleData> &jets,
+                                                      const rv::RVec<FCCAnalysesJetConstituents> &jcs)
     {
+      bool VERBOSE(false);
+      if(VERBOSE) std::cout<<"ANDREA I am in get_PIDs"<<std::endl;
       rv::RVec<FCCAnalysesJetConstituentsData> out;
+      if(VERBOSE) std::cout<<"ANDREA let's run getRP2MC_pdg"<<std::endl;
       FCCAnalysesJetConstituentsData PIDs = FCCAnalyses::ReconstructedParticle2MC::getRP2MC_pdg(recin, mcin, RecPart, Particle);
+      if(VERBOSE) std::cout<<"ANDREA getRP2MC_pdg DONE. Jets loop with size:\t"<<jets.size()<<std::endl;
 
+      rv::RVec<FCCAnalysesJetConstituentsData> const_p = cast_constituent(jcs, ReconstructedParticle::get_p);
+      if(VERBOSE) std::cout<<"Array of const p:"<<std::endl;
+      if(VERBOSE) std::cout<<const_p<<std::endl;
+      if(VERBOSE) std::cout<<"const_p size:\t"<<const_p[0].size()+const_p[1].size()<<std::endl;
+      FCCAnalysesJetConstituentsData tmp;
+      tmp.resize(const_p[0].size()+const_p[1].size());
+
+      int count(0);
       for (const auto &jet : jets)
       {
-        FCCAnalysesJetConstituentsData tmp;
+        if(count>1) continue;
+        if(VERBOSE) std::cout<<"ANDREA jet px:\t"<<jet.momentum.x<<std::endl;
+        bool found(false), filled(false);
         for (auto it = jet.particles_begin; it < jet.particles_end; ++it)
         {
-          tmp.push_back(PIDs.at(it));
+          found = false;
+          filled = false;
+          //tmp.push_back(PIDs.at(it));
+          if(VERBOSE) std::cout<<"ANDREA PDG ID pushed:\t"<<PIDs.at(it)<<std::endl;
+          int mc_ind=mcin.at(it);
+          edm4hep::MCParticleData mcParticle=Particle.at(mc_ind);
+          //if(VERBOSE) std::cout<<"ANDREA truth px:\t"<<mcParticle.momentum.x<<std::endl;
+          //if(VERBOSE) std::cout<<"ANDREA reco  px:\t"<<RecPart.at(it).momentum.x<<std::endl;
+          float truth_p = std::sqrt(mcParticle.momentum.x * mcParticle.momentum.x + mcParticle.momentum.y * mcParticle.momentum.y + mcParticle.momentum.z * mcParticle.momentum.z);
+          float reco_p = std::sqrt(RecPart.at(it).momentum.x * RecPart.at(it).momentum.x + RecPart.at(it).momentum.y * RecPart.at(it).momentum.y + RecPart.at(it).momentum.z * RecPart.at(it).momentum.z);
+          if(VERBOSE) std::cout<<"ANDREA truth  p:\t"<<truth_p<<std::endl;
+          if(VERBOSE) std::cout<<"ANDREA reco   p:\t"<<reco_p<<std::endl;
+
+          if(VERBOSE) std::cout<<"Now find jet constituent corresponding to this truth MC and reco particle"<<std::endl;
+          for (int cc = 0; cc < 2; cc++) {
+           //for (int i = 0; i < jcs.size(); ++i)
+             //FCCAnalysesJetConstituents ct = jcs.at(i);
+           for (int i = 0; i < const_p[cc].size(); ++i)
+           {
+             if (abs(const_p[cc][i]-reco_p)/const_p[cc][i]>1e-5) continue;
+             //if (const_p[cc][i]!=reco_p) continue;
+             if(VERBOSE) std::cout<<"ANDREA const p:\t"<<const_p[cc][i]<<std::endl; 
+             if(VERBOSE) std::cout<<"ANDREA const ind:\t"<<cc<<" "<<i<<std::endl; 
+             unsigned int constp0_size=const_p[0].size();
+             if(VERBOSE) std::cout<<"ANDREA truth PDG ID:\t"<<mcParticle.PDG<<std::endl;
+             tmp[cc * constp0_size + i]=mcParticle.PDG;
+             found=true;
+             break;
+           }
+          }
+          if(VERBOSE) std::cout<<std::endl;
         }
-        out.push_back(tmp);
+        count ++;
+        if(count==1 && found && !filled) { 
+          filled=true; 
+          for (int it=0; it<tmp.size(); it++) { if (tmp[it]==0) tmp[it]=22; }
+          FCCAnalysesJetConstituentsData tmp2, tmp3;
+          for (int it=0; it<const_p[0].size(); it++) { tmp2.push_back(tmp[it]); }
+          out.push_back(tmp2);
+          for (int it=0; it<const_p[1].size(); it++) { tmp3.push_back(tmp[const_p[0].size()+it]); }
+          out.push_back(tmp3);
+        }
       }
       return out;
     }

@@ -207,7 +207,8 @@ namespace FCCAnalyses {
 						      const ROOT::VecOps::RVec< int > mcin,
 						      const rv::RVec<edm4hep::ReconstructedParticleData>& RecPart,
 						      const rv::RVec<edm4hep::MCParticleData>& Particle,
-						      const rv::RVec<edm4hep::ReconstructedParticleData>& Jets);
+						      const rv::RVec<edm4hep::ReconstructedParticleData>& Jets,
+						      const rv::RVec<FCCAnalysesJetConstituents> &jcs);
 
     rv::RVec<FCCAnalysesJetConstituentsData> get_PIDs_cluster(const ROOT::VecOps::RVec< int > recin,
                                                               const ROOT::VecOps::RVec< int > mcin,

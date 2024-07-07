@@ -20,6 +20,13 @@ class RDFanalysis:
 
         from examples.FCCee.weaver.config import collections, njets
 
+        ## ANDREA: define index collections of reco'ed and truth MC particles
+        df = df.Alias("MCRecoAssociations0ind", "MCRecoAssociations#0.index")
+        df = df.Alias("MCRecoAssociations1ind", "MCRecoAssociations#1.index")
+        #df = df.Alias("Jet0", "Jet#3.index")
+        df = df.Alias("Jet0", "Jet")
+
+
         ## define jet clustering parameters
         jetClusteringHelper = ExclusiveJetClusteringHelper(collections["PFParticles"], njets)
 

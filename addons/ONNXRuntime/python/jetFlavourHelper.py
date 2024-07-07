@@ -26,6 +26,11 @@ class JetFlavourHelper:
         self.l = coll["PathLength"]
         self.bz = coll["Bz"]
 
+        # ANDREA: retrieve association between reco and MC particles: MCRecoAssociations#0 points to reco and #1 to truth particles
+        self.mcrecoZero = coll["MCRecoAssociations0"]
+        self.mcrecoOne = coll["MCRecoAssociations1"]
+        self.jets = coll["Jet"]
+
         self.definition = dict()
 
         # ===== VERTEX
@@ -217,6 +222,12 @@ class JetFlavourHelper:
         self.definition[
             "jet_nnhad{}".format(self.tag)
         ] = "JetConstituentsUtils::count_type(pfcand_isNeutralHad{})".format(self.tag)
+
+        self.definition["pfcand_truthPID{}".format(self.tag)] = "JetConstituentsUtils::get_PIDs({}, {}, {}, {}, {}, {})".format(
+            self.mcrecoZero, self.mcrecoOne, self.pfcand, self.particle, self.jets, self.const
+### WRONG on purpose
+#            self.mcrecoOne, self.mcrecoZero, self.pfcand, self.particle, self.jets#jet
+        )
 
     def define(self, df):
 

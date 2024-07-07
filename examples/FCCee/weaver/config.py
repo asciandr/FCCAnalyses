@@ -21,10 +21,14 @@ collections = {
     "dNdx": "EFlowTrack_2",
     "PathLength": "EFlowTrack_L",
     "Bz": "magFieldBz",
+    "MCRecoAssociations0": "MCRecoAssociations0ind",
+    "MCRecoAssociations1": "MCRecoAssociations1ind",
+    "Jet": "Jet0",
 }
 
 #### list of flavors f = g, q, c, s, ...(will look for input file name ccontaining "[Hff]")
-flavors = ["g", "q", "s", "c", "b", "tau"]
+#flavors = ["g", "q", "s", "c", "b", "tau"]
+flavors = ["g", "u", "d", "s", "c", "b", "tau"]
 
 ## define here the branches to be stored in the output root files in addition to the predefined one
 ## only the name of the var is used here, the metadata is used in stage_plots
@@ -340,6 +344,14 @@ variables_pfcand = {
         "bin": 100,
         "xmin": -3.14,
         "xmax": 3.14,
+        "scale": "lin",
+    },
+    "pfcand_truthPID": {
+        "name": "pfcand_truthPID",
+        "title": "truth PID",
+        "bin": 20001,
+        "xmin": -10000.5,
+        "xmax": 10000.5,
         "scale": "lin",
     },
 }
