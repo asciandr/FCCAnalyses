@@ -11,9 +11,9 @@ if len(sys.argv) < 2:
 
 input_file = sys.argv[1]
 output_file = sys.argv[2]
-n_start = int(sys.argv[3])
-n_final = int(sys.argv[4])
-n_events = n_final - n_start
+#n_start = int(sys.argv[3])
+#n_final = int(sys.argv[4])
+#n_events = n_final - n_start
 
 # Opening the input file containing the tree (output of stage1.py)
 infile = TFile.Open(input_file, "READ")
@@ -21,10 +21,12 @@ infile = TFile.Open(input_file, "READ")
 ev = infile.Get("events")
 numberOfEntries = ev.GetEntries()
 
-## basic checks
-if n_final > n_start + numberOfEntries:
-    print("ERROR: requesting too many events. This file only has {}".format(numberOfEntries))
-    sys.exit()
+n_events = numberOfEntries
+
+### basic checks
+#if n_final > n_start + numberOfEntries:
+#    print("ERROR: requesting too many events. This file only has {}".format(numberOfEntries))
+#    sys.exit()
 
 branches_pfcand = list(variables_pfcand.keys())
 branches_jet = list(variables_jet.keys())
@@ -91,7 +93,8 @@ if debug:
         print(key)
 
 # Loop over all events
-for entry in range(n_start, n_final):
+#for entry in range(n_start, n_final):
+for entry in range(0,n_events):
     # Load selected branches with data from specified event
 
     # if (entry+1)%100 == 0:
