@@ -28,7 +28,16 @@ class RDFanalysis:
 
 
         ## define jet clustering parameters
+        ## ANDREAL try to filter out photons below 2 GeV -> impact on (gluon) tagging?
         jetClusteringHelper = ExclusiveJetClusteringHelper(collections["PFParticles"], njets)
+#        df = (
+#            df
+#            .Alias("selected_pfcand","ReconstructedParticles")
+#            .Define("selected_pfcand_p","ReconstructedParticle::get_p(selected_pfcand)")
+#            .Define("selected_pfcand_type","ReconstructedParticle::get_type(selected_pfcand)")
+#	    .Filter("(selected_pfcand_type==22 && selected_pfcand_p>2.) || selected_pfcand_p>0.")
+#        )
+#        jetClusteringHelper = ExclusiveJetClusteringHelper("ReconstructedParticles", njets)
 
         ## run jet clustering
         df = jetClusteringHelper.define(df)
